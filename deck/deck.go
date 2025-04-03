@@ -1,6 +1,8 @@
 package deck
 
 import (
+	"os"
+	"bufio"
 	"fmt"
 	"math/rand"
 )
@@ -66,3 +68,46 @@ func Deal(deck Deck, handSize int) (Deck, Deck) {
 	return hand, deck
 }
 
+/*
+ * I/O
+ */
+func (deck Deck) SaveToFile(filename string) error {
+	file, err := os.Create(filename)
+	if (err != nil) {
+		return err
+	}
+
+	defer file.Close()
+
+	writeBuf := bufio.NewWriter(file)
+
+	for _, card := range deck.cards {
+		_, err := writeBuf.WriteString(fmt.Sprintf("%s%s\n", card.suit, card.rank))
+		if (err != nil) {
+			return err
+		}
+	}
+
+	writeBuf.Flush()
+	return nil
+}
+
+func ReadFromFile(filename string) (Deck, error) {
+	file, err := os.Open(filename)
+	if (err != nil) {
+		return Deck{}, err
+	}
+
+	defer file.Close()
+
+	var cards []Card
+	readBuf := bufio.NewScanner(file)
+
+	for readBuf.Scan() {
+		line := readBuf.Text()
+
+		cards = append(cards, Card{suit: string(line[0]), rank: string(line[1:])})
+	}
+
+	return Deck{cards: cards}, nil
+}
