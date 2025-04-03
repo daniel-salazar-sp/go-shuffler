@@ -1,14 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"github.com/daniel-salazar-sp/go-shuffler/deck"
 )
 
 func main() {
-	fmt.Println("Shuffler v0.0.1")
+	cards := deck.NewDeck()
+	cards.Shuffle()
 
-	deck := deck.NewDeck()
-
-	deck.Print()
+	hand, cards := deck.Deal(cards, 5)
+	hand.Print()
 }
